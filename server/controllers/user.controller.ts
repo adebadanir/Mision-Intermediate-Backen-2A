@@ -6,6 +6,7 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  getUserByEmail,
 } from "../models/user.model";
 import { error } from "console";
 
@@ -80,7 +81,17 @@ const createUserController = async (req: Request, res: Response) => {
       return;
     }
     const id = createId();
+    const existingUser = await getUserByEmail(email);
+    if (existingUser === email) {
+      res.status(409).json({
+        code: 409,
+        success: false,
+        message: "User with this email already exists.",
+      });
+      return;
+    }
     const user = await createUser(id, name, email, phone_number, password);
+
     res.status(201).json({
       code: 201,
       success: true,

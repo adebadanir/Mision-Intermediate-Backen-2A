@@ -1,4 +1,4 @@
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import db from "../config/db";
 
 const getAllUsers = async () => {
@@ -14,6 +14,14 @@ const getUserById = async (id: string) => {
     [id]
   );
   return rows;
+};
+
+const getUserByEmail = async (email: string) => {
+  const [rows] = await db.query<RowDataPacket[]>(
+    "SELECT email FROM users WHERE email = ? AND deleted_at IS NULL LIMIT 1",
+    [email]
+  );
+  return rows.length > 0 ? rows[0].email : null;
 };
 
 const createUser = async (
@@ -62,4 +70,11 @@ const deleteUser = async (id: string) => {
   return rows;
 };
 
-export { getAllUsers, getUserById, createUser, updateUser, deleteUser };
+export {
+  getAllUsers,
+  getUserById,
+  getUserByEmail,
+  createUser,
+  updateUser,
+  deleteUser,
+};
